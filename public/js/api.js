@@ -63,20 +63,20 @@ const Api = {
     }
 
     const contentType = response.headers.get('content-type') || '';
-    if (!contentType.includes('application/json')) {
-      if (!response.ok) {
-        throw new Error(`Request failed (${response.status})`);
-      }
-      return null;
+    let data = null;
+
+    if (contentType.includes('application/json')) {
+      data = await response.json();
+    } else if (!response.ok) {
+      const text = await response.text();
+      throw new Error(text || `Request failed (${response.status})`);
     }
 
-    const data = await response.json();
-
     if (!response.ok) {
-      let message = 'Request failed';
-      if (typeof data.detail === 'string') {
+      let message = `Request failed (${response.status})`;
+      if (data && typeof data.detail === 'string') {
         message = data.detail;
-      } else if (Array.isArray(data.detail) && data.detail.length) {
+      } else if (data && Array.isArray(data.detail) && data.detail.length) {
         message = data.detail[0].msg || 'Validation error';
       }
       throw new Error(message);

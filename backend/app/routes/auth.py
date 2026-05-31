@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 
 from app.config.database import get_database
 from app.config.security import create_access_token, hash_password, verify_password
+from app.config.settings import settings
 from app.schemas.user_schema import TokenResponse, UserLogin, UserResponse, UserSignup
 from app.utils.dependencies import get_current_user
 from app.utils.helpers import serialize_doc, utc_now
@@ -24,6 +25,12 @@ def _user_response(user: dict) -> UserResponse:
 
 @router.post("/signup", response_model=TokenResponse, status_code=status.HTTP_201_CREATED)
 async def signup(payload: UserSignup):
+    if not settings.has_jwt_config:
+        raise HTTPException(
+            status_code=503,
+            detail="Server misconfigured: JWT_SECRET is missing. Add it in Vercel Environment Variables.",
+        )
+
     if not is_valid_email(payload.email):
         raise HTTPException(status_code=400, detail="Invalid email format")
     if not is_valid_password(payload.password):
@@ -55,6 +62,12 @@ async def signup(payload: UserSignup):
 
 @router.post("/login", response_model=TokenResponse)
 async def login(payload: UserLogin):
+    if not settings.has_jwt_config:
+        raise HTTPException(
+            status_code=503,
+            detail="Server misconfigured: JWT_SECRET is missing. Add it in Vercel Environment Variables.",
+        )
+
     db = get_database()
     user = await db.users.find_one({"email": payload.email.lower()})
     if not user or not verify_password(payload.password, user["password_hash"]):

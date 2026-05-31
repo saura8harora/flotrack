@@ -4,7 +4,7 @@ from pathlib import Path
 
 from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, RedirectResponse
+from fastapi.responses import FileResponse, JSONResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
 import app.config.database as database
@@ -34,6 +34,7 @@ app = FastAPI(title="FloTrack API", version="1.0.0", lifespan=lifespan)
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.cors_origins_list,
+    allow_origin_regex=r"https://.*\.vercel\.app",
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -42,9 +43,33 @@ app.add_middleware(
 
 @app.middleware("http")
 async def ensure_database(request: Request, call_next):
-    if database.db is None and settings.has_database_config:
-        await connect_to_mongo()
+    if request.url.path.startswith("/api") and request.url.path != "/api/health":
+        if not settings.has_database_config:
+            return JSONResponse(
+                status_code=503,
+                content={
+                    "detail": "MONGO_URI is not configured. Add it in Vercel → Settings → Environment Variables.",
+                },
+            )
+        if database.db is None:
+            try:
+                await connect_to_mongo()
+            except Exception as exc:
+                return JSONResponse(
+                    status_code=503,
+                    content={"detail": f"Database connection failed: {exc}"},
+                )
     return await call_next(request)
+
+
+@app.exception_handler(Exception)
+async def unhandled_exception_handler(request: Request, exc: Exception):
+    if isinstance(exc, HTTPException):
+        return JSONResponse(status_code=exc.status_code, content={"detail": exc.detail})
+    return JSONResponse(
+        status_code=500,
+        content={"detail": f"Server error: {type(exc).__name__}: {exc}"},
+    )
 
 
 app.include_router(auth.router)
@@ -58,10 +83,19 @@ app.include_router(analytics.router)
 
 @app.get("/api/health")
 async def health_check():
+    if settings.has_database_config and database.db is None:
+        try:
+            await connect_to_mongo()
+        except Exception:
+            pass
+
     return {
         "status": "ok",
         "service": "FloTrack API",
-        "database": "connected" if database.db is not None else "not_configured",
+        "mongo_uri_set": settings.has_database_config,
+        "jwt_secret_set": settings.has_jwt_config,
+        "database": "connected" if database.db is not None else "disconnected",
+        "connection_error": database.last_connection_error,
     }
 
 
