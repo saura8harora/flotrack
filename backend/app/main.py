@@ -1,22 +1,32 @@
+import os
 from contextlib import asynccontextmanager
 from pathlib import Path
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, HTTPException, Request
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, RedirectResponse
 from fastapi.staticfiles import StaticFiles
 
+import app.config.database as database
 from app.config.database import close_mongo_connection, connect_to_mongo
 from app.config.settings import settings
 from app.routes import analytics, auth, calendar, dashboard, habits, notes, tasks
 
-FRONTEND_DIR = Path(__file__).resolve().parent.parent.parent / "frontend"
+ROOT_DIR = Path(__file__).resolve().parent.parent.parent
+FRONTEND_DIR = ROOT_DIR / "frontend"
+PUBLIC_DIR = ROOT_DIR / "public"
+IS_VERCEL = os.getenv("VERCEL") == "1"
+STATIC_DIR = PUBLIC_DIR if IS_VERCEL and PUBLIC_DIR.exists() else FRONTEND_DIR
+
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    await connect_to_mongo()
-    yield
-    await close_mongo_connection()
+    if not IS_VERCEL:
+        await connect_to_mongo()
+        yield
+        await close_mongo_connection()
+    else:
+        yield
 
 
 app = FastAPI(title="FloTrack API", version="1.0.0", lifespan=lifespan)
@@ -29,6 +39,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
+
+@app.middleware("http")
+async def ensure_database(request: Request, call_next):
+    if database.db is None and settings.has_database_config:
+        await connect_to_mongo()
+    return await call_next(request)
+
+
 app.include_router(auth.router)
 app.include_router(dashboard.router)
 app.include_router(habits.router)
@@ -40,32 +58,39 @@ app.include_router(analytics.router)
 
 @app.get("/api/health")
 async def health_check():
-    return {"status": "ok", "service": "FloTrack API"}
+    return {
+        "status": "ok",
+        "service": "FloTrack API",
+        "database": "connected" if database.db is not None else "not_configured",
+    }
 
 
-@app.get("/")
-async def root():
-    return RedirectResponse(url="/login.html")
+if not IS_VERCEL:
 
+    @app.get("/")
+    async def root():
+        return RedirectResponse(url="/login.html")
 
-if FRONTEND_DIR.exists():
-    app.mount("/css", StaticFiles(directory=FRONTEND_DIR / "css"), name="css")
-    app.mount("/js", StaticFiles(directory=FRONTEND_DIR / "js"), name="js")
+    if STATIC_DIR.exists():
+        app.mount("/css", StaticFiles(directory=STATIC_DIR / "css"), name="css")
+        app.mount("/js", StaticFiles(directory=STATIC_DIR / "js"), name="js")
 
-    ALLOWED_PAGES = {"login", "signup", "dashboard", "tasks", "calendar", "notes", "analytics", "index"}
+        ALLOWED_PAGES = {
+            "login", "signup", "dashboard", "tasks", "calendar", "notes", "analytics", "index",
+        }
 
-    def _page_response(page_name: str) -> FileResponse:
-        if page_name not in ALLOWED_PAGES:
-            raise HTTPException(status_code=404, detail="Page not found")
-        path = FRONTEND_DIR / f"{page_name}.html"
-        if not path.exists():
-            raise HTTPException(status_code=404, detail="Page not found")
-        return FileResponse(path, media_type="text/html")
+        def _page_response(page_name: str) -> FileResponse:
+            if page_name not in ALLOWED_PAGES:
+                raise HTTPException(status_code=404, detail="Page not found")
+            path = STATIC_DIR / f"{page_name}.html"
+            if not path.exists():
+                raise HTTPException(status_code=404, detail="Page not found")
+            return FileResponse(path, media_type="text/html")
 
-    @app.get("/{page_name}.html")
-    async def serve_page(page_name: str):
-        return _page_response(page_name)
+        @app.get("/{page_name}.html")
+        async def serve_page(page_name: str):
+            return _page_response(page_name)
 
-    @app.get("/pages/{page_name}.html")
-    async def serve_legacy_page(page_name: str):
-        return _page_response(page_name)
+        @app.get("/pages/{page_name}.html")
+        async def serve_legacy_page(page_name: str):
+            return _page_response(page_name)

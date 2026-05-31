@@ -91,6 +91,27 @@ uvicorn app.main:app --reload --host 127.0.0.1 --port 8000
 
 Open `http://127.0.0.1:8000/pages/login.html`
 
+## Deploy on Vercel
+
+1. Push the repo to GitHub and import it in [Vercel](https://vercel.com).
+2. Static files are served from the `public/` folder.
+3. API routes are handled by `api/index.py` (FastAPI + Mangum).
+4. Add these **Environment Variables** in the Vercel project settings:
+
+| Variable | Description |
+|---|---|
+| `MONGO_URI` | MongoDB Atlas connection string |
+| `DATABASE_NAME` | `flotrack_db` |
+| `JWT_SECRET` | Long random secret for JWT signing |
+| `JWT_ALGORITHM` | `HS256` |
+| `JWT_EXPIRE_MINUTES` | `10080` |
+| `CORS_ORIGINS` | Your Vercel URL(s), e.g. `https://flotrack.vercel.app` |
+
+5. In MongoDB Atlas → Network Access, allow access from anywhere (`0.0.0.0/0`) so Vercel can connect.
+6. Deploy. Open `https://your-project.vercel.app/login.html`.
+
+> **Note:** The root `requirements.txt` lists Python dependencies directly (Vercel cannot use `-r backend/requirements.txt`).
+
 ## Environment Variables
 
 | Variable | Description |

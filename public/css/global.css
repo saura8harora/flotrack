@@ -355,8 +355,7 @@ button, input, select, textarea {
 .page-header {
   margin-bottom: 28px;
   padding-bottom: 16px;
-  border-bottom: 3px solid var(--c-100);
-  color: #fff;
+  border-bottom: 3px solid #ffffff;
 }
 
 .page-header h1 {
@@ -366,6 +365,7 @@ button, input, select, textarea {
   letter-spacing: -0.02em;
   line-height: 1;
   margin-bottom: 6px;
+  color: #ffffff;
 }
 
 .page-header p {
@@ -373,7 +373,7 @@ button, input, select, textarea {
   font-size: 0.8rem;
   text-transform: uppercase;
   letter-spacing: 0.06em;
-  color: #fff;
+  color: #ffffff;
 }
 
 .section-heading {
