@@ -1,4 +1,8 @@
-const API_BASE_URL = 'http://127.0.0.1:8000';
+const API_BASE_URL = (() => {
+  const { hostname, port } = window.location;
+  const isLocalFrontendServer = (hostname === '127.0.0.1' || hostname === 'localhost') && port && port !== '8000';
+  return isLocalFrontendServer ? 'http://127.0.0.1:8000' : '';
+})();
 
 const Api = {
   getToken() {
