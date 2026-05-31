@@ -2,32 +2,8 @@
   "$schema": "https://openapi.vercel.sh/vercel.json",
   "rewrites": [
     {
-      "source": "/",
-      "destination": "/frontend/login.html"
-    },
-    {
-      "source": "/css/(.*)",
-      "destination": "/frontend/css/$1"
-    },
-    {
-      "source": "/js/(.*)",
-      "destination": "/frontend/js/$1"
-    },
-    {
-      "source": "/assets/(.*)",
-      "destination": "/frontend/assets/$1"
-    },
-    {
-      "source": "/components/(.*)",
-      "destination": "/frontend/components/$1"
-    },
-    {
       "source": "/pages/:page.html",
-      "destination": "/frontend/:page.html"
-    },
-    {
-      "source": "/:page.html",
-      "destination": "/frontend/:page.html"
+      "destination": "/:page.html"
     },
     {
       "source": "/api/(.*)",
