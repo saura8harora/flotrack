@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Notes - FloTrack</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="/css/notes.css">
+</head>
+<body class="app-body grid-background">
+  <div class="app-layout" id="notes-page">
+    <div id="sidebar-container"></div>
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Notes</h1>
+        <p>Capture ideas · search · auto-save</p>
+      </div>
+
+      <div class="notes-toolbar">
+        <button class="btn btn-primary" id="new-note-btn">+ New Note</button>
+      </div>
+
+      <div class="notes-layout">
+        <div class="notes-sidebar">
+          <div class="notes-search">
+            <input type="text" id="notes-search" class="form-control" placeholder="Search notes...">
+          </div>
+          <div class="notes-list" id="notes-list"></div>
+        </div>
+
+        <div class="notes-empty" id="notes-empty">
+          <p>← Select or create a note</p>
+        </div>
+
+        <div class="notes-editor hidden" id="notes-editor">
+          <div class="notes-editor-header">
+            <input type="text" id="note-title-input" placeholder="NOTE TITLE">
+            <button class="btn btn-danger btn-sm" id="delete-note-btn">Delete</button>
+          </div>
+          <div class="notes-editor-body">
+            <textarea id="note-content-input" placeholder="Start writing..."></textarea>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/notes.js"></script>
+</body>
+</html>

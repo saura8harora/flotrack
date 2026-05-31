@@ -1,0 +1,164 @@
+.stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 28px;
+}
+
+.stat-card {
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+}
+
+.stat-card-header {
+  padding: 6px 12px;
+  background: var(--gray);
+  border-bottom: 2px solid var(--black);
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--white);
+}
+
+.stat-card-body {
+  padding: 20px 16px;
+}
+
+.stat-value {
+  font-family: var(--font-display);
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.stat-sub {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  margin-top: 6px;
+  color: var(--gray-dark);
+}
+
+.dashboard-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 20px;
+}
+
+.dashboard-section {
+  border: var(--border);
+  box-shadow: var(--shadow-sm);
+  background: var(--white);
+}
+
+.dashboard-section-header {
+  padding: 8px 14px;
+  background: var(--gray);
+  border-bottom: var(--border);
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.dashboard-section-header .window-controls span {
+  width: 12px;
+  height: 12px;
+  border: 2px solid var(--black);
+  border-radius: 50%;
+  background: var(--white);
+  display: block;
+}
+
+.dashboard-section-header .window-controls {
+  display: flex;
+  gap: 5px;
+}
+
+.dashboard-section-header h3 {
+  flex: 1;
+  text-align: center;
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--white);
+}
+
+.dashboard-section-body {
+  padding: 16px;
+}
+
+.dashboard-section.full-width {
+  grid-column: 1 / -1;
+}
+
+/* Brutalist progress meter (replaces round chart) */
+.productivity-meter {
+  padding: 8px 0;
+}
+
+.meter-bar-wrap {
+  border: var(--border);
+  height: 48px;
+  background: var(--white);
+  position: relative;
+  box-shadow: var(--shadow-sm);
+}
+
+.meter-bar-fill {
+  height: 100%;
+  background: var(--black);
+  transition: width 0.4s ease;
+}
+
+.meter-bar-label {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  mix-blend-mode: difference;
+  color: var(--white);
+  pointer-events: none;
+}
+
+.prod-stats {
+  display: flex;
+  justify-content: space-around;
+  text-align: center;
+  margin-top: 16px;
+  padding-top: 16px;
+  border-top: 2px solid var(--black);
+}
+
+.prod-stat-val {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+}
+
+.prod-stat-label {
+  font-family: var(--font-mono);
+  font-size: 0.65rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+}
+
+@media (max-width: 900px) {
+  .stats-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+
+  .dashboard-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 480px) {
+  .stats-grid {
+    grid-template-columns: 1fr;
+  }
+}

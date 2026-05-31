@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analytics - FloTrack</title>
+  <link rel="stylesheet" href="/css/global.css">
+  <link rel="stylesheet" href="/css/sidebar.css">
+  <link rel="stylesheet" href="/css/analytics.css">
+</head>
+<body class="app-body grid-background">
+  <div class="app-layout" id="analytics-page">
+    <div id="sidebar-container"></div>
+    <main class="main-content">
+      <div class="page-header">
+        <h1>Analytics</h1>
+        <p>Progress · streaks · XP growth</p>
+      </div>
+
+      <div class="analytics-grid">
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <div class="window-controls"><span></span><span></span></div>
+            <h3>completion_rate.pct</h3>
+          </div>
+          <div class="analytics-card-body">
+            <div class="completion-ring">
+              <div class="completion-value" id="completion-pct">0%</div>
+              <div class="completion-details" id="completion-detail"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <div class="window-controls"><span></span><span></span></div>
+            <h3>streak_timeline.log</h3>
+          </div>
+          <div class="analytics-card-body">
+            <div class="xp-stat" style="margin-bottom:20px;text-align:center">
+              <div class="value" id="streak-current" style="font-family:var(--font-display);font-size:2.5rem">0</div>
+              <div class="label">Current Streak (Days)</div>
+            </div>
+            <div class="streak-timeline" id="streak-timeline"></div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <div class="window-controls"><span></span><span></span></div>
+            <h3>weekly_progress.dat</h3>
+          </div>
+          <div class="analytics-card-body">
+            <div class="chart-bars" id="weekly-chart"></div>
+          </div>
+        </div>
+
+        <div class="analytics-card">
+          <div class="analytics-card-header">
+            <div class="window-controls"><span></span><span></span></div>
+            <h3>monthly_progress.dat</h3>
+          </div>
+          <div class="analytics-card-body">
+            <div class="chart-bars" id="monthly-chart"></div>
+          </div>
+        </div>
+
+        <div class="analytics-card full-width">
+          <div class="analytics-card-header">
+            <div class="window-controls"><span></span><span></span></div>
+            <h3>xp_growth.sys</h3>
+          </div>
+          <div class="analytics-card-body">
+            <div class="xp-stats">
+              <div class="xp-stat">
+                <div class="value" id="xp-total">0</div>
+                <div class="label">Total XP</div>
+              </div>
+              <div class="xp-stat">
+                <div class="value" id="xp-level">1</div>
+                <div class="label">Level</div>
+              </div>
+              <div class="xp-stat">
+                <div class="value" id="xp-next">100</div>
+                <div class="label">XP to Next</div>
+              </div>
+            </div>
+            <div class="chart-bars" id="xp-chart"></div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/auth.js"></script>
+  <script src="/js/sidebar.js"></script>
+  <script src="/js/analytics.js"></script>
+</body>
+</html>
